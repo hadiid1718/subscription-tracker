@@ -1,5 +1,5 @@
-name: 'Subdub'
-  on:
+name: Subdub
+on:
     push:
       branches: [main]
 
