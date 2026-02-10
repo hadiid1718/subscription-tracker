@@ -1,20 +1,25 @@
-name: Subdub
+name: Subdub CI
+
 on:
-    push:
-      branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: setup node
-        uses: actions/setup-node@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
-      - name: install dependencies
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
         run: npm install
-      - name: build
-        run: npm run build
-      - name: test
+
+      - name: Run tests
         run: npm test
