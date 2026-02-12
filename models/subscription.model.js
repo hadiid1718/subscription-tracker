@@ -11,7 +11,6 @@ const subscriptionSchema = new mongoose.Schema(
     },
     desctiption: {
       type: String,
-      required: [true, "Description is required"],
       trim: true,
       minLength: [10, "Description must be at least 10 characters long"],
       maxLength: [500, "Description must be at most 500 characters long"],
@@ -58,7 +57,6 @@ const subscriptionSchema = new mongoose.Schema(
     },
     renewalDate: {
       type: Date,
-      required: true,
       validate: {
         validator: function (value) {
           return value > this.startDate;
@@ -79,7 +77,7 @@ const subscriptionSchema = new mongoose.Schema(
 
 //Auto-calculate renewal date based on frequency
 
-subscriptionSchema.pre("save", function(next){
+subscriptionSchema.pre("save", function(){
   if(!this.renewalDate){
     const renewalPeriods = {
       monthly: "30",
@@ -95,7 +93,7 @@ subscriptionSchema.pre("save", function(next){
     this.status = 'Expired'
   }
   
-  next()
+  
 })
 const Subscription = mongoose.model("Subscription", subscriptionSchema);
 
