@@ -49,9 +49,53 @@ session.startTransaction();
 }
 
 export const signIn = async(req,res,next)=> {
+   try{
+    const { email, password } = req.body;
+    const user = await User.findOne({ email})
+    if(!user){
+      const error = new Error("No user exist with this email")
+      error.statusCode = 404
+      throw error;
+    }
 
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if(!isPasswordValid){
+      const error = new Error("Invalid password")
+      error.statusCode = 401
+      throw error;
+    }
+      const token = jwt.sign(
+        { userId: user._id},
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+      )
+
+      res.status(200).json({
+        success: true,
+        message: "User signed in successfully",
+        data: {
+          token,
+          user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email
+          }
+        }
+      })
+   } catch(error){
+    next(error)
+   }
 }
 
 export const signOut = async(req,res,next)=> {
+ try{
+  res.clearcookies("token")
 
+res.status(200).json({
+  success: true,
+  message: "User signed out successfully"
+})  // Invalidate the token on the client side by clearing it from storage
+ } catch(error){
+  next(error)
+ }
 }
