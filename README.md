@@ -1,6 +1,6 @@
 # Subdub - Subscription Tracker API
 
-A robust Express.js API for managing user subscriptions with authentication, security, and database persistence using MongoDB.
+A Production Level Express.js API for managing user subscriptions with authentication, security, and database persistence using MongoDB.
 
 ## 🎯 Features
 
