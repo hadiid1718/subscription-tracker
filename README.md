@@ -125,7 +125,7 @@ subscription-tracker/
 The API uses JWT (JSON Web Tokens) for authentication. Include the token in the Authorization header:
 
 ```bash
-Authorization: Bearer <token>
+Authorization: Bearer < token >
 ```
 
 Tokens are issued during login and should be stored securely in your client application.
