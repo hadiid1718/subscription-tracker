@@ -9,6 +9,7 @@ A Production Level Express.js API for managing user subscriptions with authentic
 - **User Management:** User profile management and operations
 - **Security:** Arcjet-powered security middleware for DDoS and bot protection
 - **Database:** MongoDB with Mongoose ODM for reliable data persistence
+- **Workflow Reminders:** Upstash-powered subscription renewal reminders sent at 7, 5, 3, and 1 days before renewal
 - **Error Handling:** Centralized error handling middleware
 - **Development Tools:** nodemon for auto-reload during development
 
@@ -81,11 +82,13 @@ subscription-tracker/
 ├── controllers/
 │   ├── auth.controller.js         # Authentication logic
 │   ├── user.controller.js         # User management logic
-│   └── subscription.controller.js # Subscription logic
+│   ├── subscription.controller.js # Subscription logic
+│   └── workflow.controller.js     # Subscription reminder workflows
 ├── routes/
 │   ├── auth.router.js            # Authentication routes
 │   ├── user.router.js            # User routes
-│   └── subcription.router.js     # Subscription routes
+│   ├── subcription.router.js     # Subscription routes
+│   └── workflow.router.js        # Workflow reminder routes
 ├── models/
 │   ├── user.model.js             # User database schema
 │   └── subscription.model.js     # Subscription database schema
@@ -117,6 +120,9 @@ subscription-tracker/
 - `PUT /api/v1/subscriptions/:id` - Update subscription
 - `DELETE /api/v1/subscriptions/:id` - Delete subscription
 
+### Workflow Routes (`/api/v1/workflows`)
+- `POST /api/v1/workflows/remind` - Trigger subscription renewal reminders
+
 ### Health Check
 - `GET /` - API health check endpoint
 
@@ -138,6 +144,38 @@ Tokens are issued during login and should be stored securely in your client appl
 - **Cookie Parser:** Secure cookie handling
 - **Error Handling:** Prevents information leakage through error messages
 
+## 🔔 Workflow Reminder System
+
+The API includes an automated subscription renewal reminder system powered by Upstash Workflow:
+
+### How It Works
+
+1. **Reminder Scheduling:** When a subscription is created or updated, the renewal reminder workflow is triggered
+2. **Reminder Dates:** The system sends automatic reminders at **7, 5, 3, and 1 days** before the subscription renewal date
+3. **Smart Scheduling:** Uses `sleepUntil()` to efficiently schedule reminders without constant polling
+4. **Notification Delivery:** Reminders can trigger email notifications, SMS messages, and push notifications
+
+### Workflow Flow
+
+```
+1. Fetch active subscription
+2. Validate renewal date hasn't passed
+3. For each reminder (7, 5, 3, 1 days before):
+   - Calculate reminder date
+   - Sleep until reminder time
+   - Trigger reminder notification
+   - Send via email/SMS/push
+```
+
+### Configuration
+
+Add to your `.env` file:
+```
+UPSTASH_WORKFLOW_API_BASE_URL=your_upstash_workflow_url
+```
+
+Reminders are sent via the `triggerReminder` function which can be extended to send emails, SMS messages, and push notifications to users.
+
 ## 📦 Dependencies
 
 - **express** - Web framework
@@ -145,9 +183,11 @@ Tokens are issued during login and should be stored securely in your client appl
 - **jsonwebtoken** - JWT authentication
 - **bcryptjs** - Password hashing
 - **@arcjet/node** - Security middleware
+- **@upstash/workflow** - Workflow orchestration for reminders
 - **dotenv** - Environment variable management
 - **morgan** - HTTP request logger
 - **cookie-parser** - Cookie middleware
+- **dayjs** - Date/time manipulation
 
 ## 🛠️ Development Dependencies
 
